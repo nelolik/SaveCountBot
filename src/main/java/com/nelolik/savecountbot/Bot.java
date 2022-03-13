@@ -1,8 +1,9 @@
 package com.nelolik.savecountbot;
 
+import com.nelolik.savecountbot.handler.MessageHandler;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -11,14 +12,24 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Slf4j
+@RequiredArgsConstructor
 @Component
 public class Bot extends TelegramLongPollingBot {
 
     @Value("${bot.name}")
-    private String botUsername = "alepars_bot";
+    private String botUsername;
 
     @Value("${bot.token}")
-    private String botToken="1242854240:AAGM0dtPbry7_umSGh3FPStcrMdPUZzT8PE";
+    private String botToken;
+
+
+    public Bot(MessageHandler messageHandler) {
+        this.messageHandler = messageHandler;
+    }
+
+    @Autowired
+    private MessageHandler messageHandler;
+
 
     @Override
     public String getBotUsername() {
@@ -33,13 +44,13 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         try {
-            SendMessage message = new SendMessage();
-            message.setChatId(update.getMessage().getChatId().toString());
-            message.setText(update.getMessage().getText());
-            execute(message);
-            log.info("Sent message to Id={} with text: {}",update.getMessage().getChatId().toString(),
-                    update.getMessage().getText());
+
+            SendMessage message = messageHandler.handle(update);
+            if (message.getText() != null && !message.getText().isEmpty()) {
+                execute(message);
+            }
         } catch (TelegramApiException e) {
+            log.error("Exception occured while message handling");
             e.printStackTrace();
         }
     }
