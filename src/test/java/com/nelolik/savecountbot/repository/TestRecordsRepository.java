@@ -57,12 +57,12 @@ public class TestRecordsRepository {
     void testSaveNewRecord() {
         String newName = "New record";
         Records record = new Records();
-        record.setId(2l);
+        record.setId(0l);
         record.setUserid(3l);
         record.setRecordName(newName);
         repository.save(record);
         List<Records> fromDb = repository.findByRecordName(newName);
         assertThat(fromDb).isNotNull().extracting(r -> Tuple.tuple(r.getRecordName(), r.getId()))
-                .contains(Tuple.tuple(newName, 5l));
+                .contains(Tuple.tuple(newName, 6l));
     }
 }

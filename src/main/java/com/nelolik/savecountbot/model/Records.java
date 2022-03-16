@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Table(name = "records")
 public class Records {
     @Id
-    @GeneratedValue(generator = "records_sequence")
+    @GeneratedValue(generator = "records_sequence", strategy = GenerationType.SEQUENCE)
     @GenericGenerator(
             name = "records_sequence",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
