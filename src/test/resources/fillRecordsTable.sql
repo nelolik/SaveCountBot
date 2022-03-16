@@ -1,4 +1,6 @@
 --CREATE SEQUENCE  IF NOT EXISTS records_seq START WITH 1 INCREMENT BY 1;
+DELETE FROM records;
+ALTER SEQUENCE records_sequence RESTART;
 
 insert into records (id, userid, record_name)
     values (nextval('records_sequence'), 1, 'prostrations'),
