@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import static com.nelolik.savecountbot.handler.TextMessageHandler.COMMAND_HELLO;
+import static com.nelolik.savecountbot.handler.TextMessageHandler.COMMAND_LIST_OF_RECORDS;
 
 @Slf4j
 @Component
@@ -52,8 +53,15 @@ public class MessageHandlerImpl implements MessageHandler {
         answer.setChatId(message.getChatId().toString());
         answer.setText("");
 
-        if (COMMAND_HELLO.equals(message.getText())) {
+        String messageText = message.getText();
+        if (messageText == null) {
+            return null;
+        }
+        if (COMMAND_HELLO.equals(messageText)) {
             return textMessageHandler.handleHelloCommand(message);
+        }
+        else if(messageText.startsWith(COMMAND_LIST_OF_RECORDS)) {
+            return textMessageHandler.handleLisOfRecordsCommand(message);
         }
         return answer;
 
