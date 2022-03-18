@@ -26,13 +26,15 @@ import static com.nelolik.savecountbot.handler.TextMessageHandler.COMMAND_LIST_O
 //@AllArgsConstructor
 public class MessageHandlerImpl implements MessageHandler {
 
-    @Autowired
     TextMessageHandler textMessageHandler;
+
+    ContextHandler contextHandler;
 
     public SendMessage handle(Update update) {
         SendMessage message = new SendMessage();
+        if (contextHandler.hasContext(update.getMessage().getChatId())) {
 
-        if (messageHasText(update)) {
+        } else if (messageHasText(update)) {
             message = handleTextMessage(update.getMessage());
             log.info("Handled message to Id={} with text: {}",message.getChatId(),
                     message.getText());
@@ -65,5 +67,12 @@ public class MessageHandlerImpl implements MessageHandler {
         }
         return answer;
 
+    }
+
+    private SendMessage handleMessageWithContext(Message message) {
+        ContextHandler.ContextPhase phase = contextHandler.getContext(message.getChatId());
+        if (phase == ContextHandler.ContextPhase.NEW_RECORD_REQUESTED) {
+            textMessageHandler.handleNewRecordCommand(message);
+        }
     }
 }
