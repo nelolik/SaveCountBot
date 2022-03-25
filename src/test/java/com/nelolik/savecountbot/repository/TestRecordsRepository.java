@@ -60,9 +60,12 @@ public class TestRecordsRepository {
         record.setId(0l);
         record.setUserid(3l);
         record.setRecordName(newName);
-        repository.save(record);
+        Records fromMethodSave = repository.save(record);
         List<Records> fromDb = repository.findByRecordName(newName);
+        record.setId(6l);
+        assertThat(fromMethodSave).isNotNull().isEqualTo(record);
         assertThat(fromDb).isNotNull().extracting(r -> Tuple.tuple(r.getRecordName(), r.getId()))
                 .contains(Tuple.tuple(newName, 6l));
+
     }
 }

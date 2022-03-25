@@ -17,8 +17,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.io.Serializable;
 import java.util.List;
 
-import static com.nelolik.savecountbot.handler.TextMessageHandler.COMMAND_HELLO;
-import static com.nelolik.savecountbot.handler.TextMessageHandler.COMMAND_LIST_OF_RECORDS;
+import static com.nelolik.savecountbot.handler.TextMessageHandler.*;
 
 @Slf4j
 @Component
@@ -28,15 +27,11 @@ public class MessageHandlerImpl implements MessageHandler {
 
     TextMessageHandler textMessageHandler;
 
-    ContextHandler contextHandler;
-
     public SendMessage handle(Update update) {
         SendMessage message = new SendMessage();
-        if (contextHandler.hasContext(update.getMessage().getChatId())) {
-
-        } else if (messageHasText(update)) {
+        if (messageHasText(update)) {
             message = handleTextMessage(update.getMessage());
-            log.info("Handled message to Id={} with text: {}",message.getChatId(),
+            log.info("Handled message to Id={} with text: {}", message.getChatId(),
                     message.getText());
         } else if (update.hasCallbackQuery()) {
             String queryData = update.getCallbackQuery().getData();
@@ -56,23 +51,19 @@ public class MessageHandlerImpl implements MessageHandler {
         answer.setText("");
 
         String messageText = message.getText();
-        if (messageText == null) {
+        if (messageText == null && messageText.isBlank()) {
             return null;
         }
         if (COMMAND_HELLO.equals(messageText)) {
             return textMessageHandler.handleHelloCommand(message);
-        }
-        else if(messageText.startsWith(COMMAND_LIST_OF_RECORDS)) {
+        } else if (messageText.startsWith(COMMAND_LIST_OF_RECORDS)) {
             return textMessageHandler.handleLisOfRecordsCommand(message);
-        }
-        return answer;
-
-    }
-
-    private SendMessage handleMessageWithContext(Message message) {
-        ContextHandler.ContextPhase phase = contextHandler.getContext(message.getChatId());
-        if (phase == ContextHandler.ContextPhase.NEW_RECORD_REQUESTED) {
-            textMessageHandler.handleNewRecordCommand(message);
+        } else if (messageText.startsWith(COMMAND_NEW_RECORD)) {
+            return textMessageHandler.handleNewRecordCommand(message);
+        } else if (messageText.startsWith(COMMAND_DELETE_RECORD)) {
+            return textMessageHandler.handleDeleteRecord(message);
+        } else {
+            return textMessageHandler.handleTextMessage(message);
         }
     }
 }

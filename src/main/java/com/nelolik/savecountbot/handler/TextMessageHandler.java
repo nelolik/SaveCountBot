@@ -16,4 +16,6 @@ public interface TextMessageHandler {
     SendMessage handleLisOfRecordsCommand(Message message);
 
     SendMessage handleDeleteRecord(Message message);
+
+    SendMessage handleTextMessage(Message message);
 }

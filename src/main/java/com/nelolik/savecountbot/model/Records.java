@@ -32,4 +32,12 @@ public class Records {
 
     @Column(name = "record_name", nullable = false)
     private String recordName;
+
+    @Override
+    public String toString() {
+        return "Records{" +
+                "userid=" + userid +
+                ", recordName='" + recordName + '\'' +
+                '}';
+    }
 }

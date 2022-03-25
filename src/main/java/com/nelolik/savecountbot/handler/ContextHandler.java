@@ -16,4 +16,6 @@ public interface ContextHandler {
     String getRecordName(Long userId);
 
     String saveRecordName(Long userId, String recordName);
+
+    ContextPhase deleteContext(Long userId);
 }

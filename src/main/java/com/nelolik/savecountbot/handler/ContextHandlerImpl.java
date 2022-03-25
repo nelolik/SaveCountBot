@@ -42,4 +42,9 @@ public class ContextHandlerImpl implements ContextHandler {
     public String saveRecordName(Long userId, String recordName) {
         return nameRepository.put(userId, recordName);
     }
+
+    @Override
+    public ContextPhase deleteContext(Long userId) {
+        return phaseRepository.remove(userId);
+    }
 }
