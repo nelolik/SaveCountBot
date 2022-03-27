@@ -41,17 +41,23 @@ public class TextMessageHandlerTest {
     @Autowired
     private TextMessageHandler handler;
 
-    private static final Long CHAT_ID = 1234567l;
+    private static final Long CHAT_ID = 1234567L;
     private static final List<Records> RECORDS = new ArrayList<>();
     private static final List<List<Counts>> COUNTS_LIST = new ArrayList<>();
-    private static final String LIST_OF_RECORDS_TEXT = "Record: Name1, count: 600\n" +
-            "Record: Name2, count: 600\n" +
-            "Record: Name3, count: 600\n";
+    private static final String LIST_OF_RECORDS_TEXT = """
+            Record: Name1, count: 600
+            Record: Name2, count: 600
+            Record: Name3, count: 600
+            """;
     private static final String WRONG_COMMAND = "/wrong_command";
+    private static final String RECORD_NAME = "Record Name";
+    private static final String COMMAND_NEW_RECORD_WITH_ARG = COMMAND_NEW_RECORD + " " + RECORD_NAME;
+
+    private static final String COMMAND_DELETE_RECORD_WITH_ARG = COMMAND_DELETE_RECORD + " " + RECORD_NAME;
 
     @BeforeAll
     static void initTest() {
-        long countId = 1l;
+        long countId = 1L;
         for (long recordId = 1; recordId < 4; recordId++) {
             RECORDS.add(new Records(recordId, CHAT_ID, "Name" + recordId));
             List<Counts> recordCounts = new ArrayList<>();
@@ -78,7 +84,7 @@ public class TextMessageHandlerTest {
     void handleEmptyLisOfRecordsTest() {
         when(recordsRepository.findByUserid(CHAT_ID)).thenReturn(null);
         SendMessage sendMessage = handler.handleLisOfRecordsCommand(message);
-        assertThat(sendMessage).isNotNull().extracting(m -> m.getText()).isEqualTo(TEXT_NO_RECORD);
+        assertThat(sendMessage).isNotNull().extracting(SendMessage::getText).isEqualTo(TEXT_NO_RECORD);
     }
 
     @Test
@@ -90,7 +96,7 @@ public class TextMessageHandlerTest {
                     .thenReturn(COUNTS_LIST.get(r.getId().intValue() - 1));
         }
         SendMessage sendMessage = handler.handleLisOfRecordsCommand(message);
-        assertThat(sendMessage).isNotNull().extracting(m -> m.getText()).isEqualTo(LIST_OF_RECORDS_TEXT);
+        assertThat(sendMessage).isNotNull().extracting(SendMessage::getText).isEqualTo(LIST_OF_RECORDS_TEXT);
     }
 
     @Test
@@ -98,7 +104,7 @@ public class TextMessageHandlerTest {
         when(message.getText()).thenReturn(COMMAND_NEW_RECORD);
         SendMessage sendMessage = handler.handleNewRecordCommand(message);
         assertThat(sendMessage).isNotNull().extracting(m -> Tuple.tuple(m.getChatId(), m.getText()))
-                .isEqualTo(Tuple.tuple(CHAT_ID.toString(), TEXT_ENTER_RECORD_NAME));
+                .isEqualTo(Tuple.tuple(CHAT_ID.toString(), TEXT_ENTER_NEW_RECORD_NAME));
         verify(contextHandler, Mockito.only()).saveContext(CHAT_ID, ContextHandler.ContextPhase.NEW_RECORD_REQUESTED);
     }
 
@@ -110,8 +116,59 @@ public class TextMessageHandlerTest {
         assertThat(sendMessage).isNull();
     }
 
-//    @Test
-//    void handleNewRecordCommandWithNameArg() {
-//        when(message)
-//    }
+    @Test
+    void handleNewRecordCommandWithNameArg() {
+        when(message.getText()). thenReturn(COMMAND_NEW_RECORD_WITH_ARG);
+        SendMessage sendMessage = handler.handleNewRecordCommand(message);
+        assertThat(sendMessage).isNotNull().extracting(m -> Tuple.tuple(m.getChatId(), m.getText()))
+                .isEqualTo(Tuple.tuple(CHAT_ID.toString(), String.format(FORMAT_NEW_RECORD_CREATED, RECORD_NAME)));
+        verify(contextHandler,Mockito.only()).deleteContext(CHAT_ID);
+    }
+
+    @Test
+    void handleDeleteRecordOnlyCommandTest() {
+        when(message.getText()).thenReturn(COMMAND_DELETE_RECORD);
+        SendMessage sendMessage = handler.handleDeleteRecord(message);
+        assertThat(sendMessage).isNotNull().extracting(m -> Tuple.tuple(m.getChatId(), m.getText()))
+                .isEqualTo(Tuple.tuple(CHAT_ID.toString(), TEXT_ENTER_DELETE_RECORD_NAME));
+        verify(contextHandler, Mockito.only()).saveContext(CHAT_ID, ContextHandler.ContextPhase.DELETE_RECORD_REQUESTED);
+    }
+
+    @Test
+    void handleNewRecordCommand() {
+        when(message.getText()).thenReturn(COMMAND_NEW_COUNT);
+        SendMessage sendMessage = handler.handleNewCountCommand(message);
+        assertThat(sendMessage).isNotNull()
+                .extracting(m -> Tuple.tuple(m.getChatId(), m.getText()))
+                .isEqualTo(Tuple.tuple(CHAT_ID.toString(), TEXT_CHOOSE_RECORD));
+        verify(contextHandler, Mockito.atLeastOnce()).deleteContext(CHAT_ID);
+        verify(contextHandler, Mockito.atLeastOnce()).saveContext(CHAT_ID, ContextHandler.ContextPhase.SAVE_COUNT_REQUESTED);
+        verify(recordsRepository, Mockito.only()).findByUserid(CHAT_ID);
+    }
+
+    @Test
+    void handleDeleteRecordCommandWithNameNotFoundTest() {
+        when(message.getText()).thenReturn(COMMAND_DELETE_RECORD_WITH_ARG);
+        SendMessage sendMessage = handler.handleDeleteRecord(message);
+        assertThat(sendMessage).isNotNull().extracting(m -> Tuple.tuple(m.getChatId(), m.getText()))
+                .isEqualTo(Tuple.tuple(CHAT_ID.toString(), String.format(FORMAT_RECORD_NOT_FOUND, RECORD_NAME)));
+        verify(contextHandler, Mockito.only()).deleteContext(CHAT_ID);
+    }
+
+    @Test
+    void handleDeleteRecordCommandWithRealNameTest() {
+        List<Records> sublistByName = RECORDS.subList(0, 1);
+        Long recordId = sublistByName.get(0).getId();
+        Long userId = sublistByName.get(0).getUserid();
+        String recordName = sublistByName.get(0).getRecordName();
+        when(message.getText()).thenReturn(COMMAND_DELETE_RECORD + " " + recordName);
+        when(recordsRepository.findByRecordNameAndUserid(recordName, userId)).thenReturn(sublistByName);
+        SendMessage sendMessage = handler.handleDeleteRecord(message);
+        assertThat(sendMessage).isNotNull().extracting(m -> Tuple.tuple(m.getChatId(), m.getText()))
+                .isEqualTo(Tuple.tuple(CHAT_ID.toString(), String.format(FORMAT_DELETE_RECORD_SUCCEED, recordName)));
+        verify(recordsRepository, Mockito.atLeastOnce()).findByRecordNameAndUserid(recordName, userId);
+        verify(recordsRepository, Mockito.atLeastOnce()).deleteById(recordId);
+        verify(countsRepository, Mockito.only()).deleteAllByRecordid(recordId);
+        verify(contextHandler, Mockito.only()).deleteContext(CHAT_ID);
+    }
 }

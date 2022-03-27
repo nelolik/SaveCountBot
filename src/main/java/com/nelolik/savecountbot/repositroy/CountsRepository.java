@@ -10,4 +10,6 @@ public interface CountsRepository extends JpaRepository<Counts, Long> {
 
     List<Counts> findByRecordid(Long recordId);
 
+    void deleteAllByRecordid(Long recordId);
+
 }

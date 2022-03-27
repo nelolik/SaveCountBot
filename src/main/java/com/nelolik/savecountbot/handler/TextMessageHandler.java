@@ -4,14 +4,17 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 public interface TextMessageHandler {
-    public static final String COMMAND_HELLO = "/hello";
-    public static final String COMMAND_NEW_RECORD = "/new_record";
-    public static final String COMMAND_LIST_OF_RECORDS = "/list_of_records";
-    public static final String COMMAND_DELETE_RECORD = "/delete_record";
+    String COMMAND_HELLO = "/hello";
+    String COMMAND_NEW_RECORD = "/new_record";
+    String COMMAND_NEW_COUNT = "/new_count";
+    String COMMAND_LIST_OF_RECORDS = "/list_of_records";
+    String COMMAND_DELETE_RECORD = "/delete_record";
 
     SendMessage handleHelloCommand(Message message);
 
     SendMessage handleNewRecordCommand(Message message);
+
+    SendMessage handleNewCountCommand(Message message);
 
     SendMessage handleLisOfRecordsCommand(Message message);
 

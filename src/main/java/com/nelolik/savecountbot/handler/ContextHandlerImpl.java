@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @Component
@@ -14,8 +15,8 @@ public class ContextHandlerImpl implements ContextHandler {
     Map<Long, String> nameRepository;
 
     public ContextHandlerImpl() {
-        phaseRepository = new HashMap<>();
-        nameRepository = new HashMap<>();
+        phaseRepository = new ConcurrentHashMap<>();
+        nameRepository = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -45,6 +46,7 @@ public class ContextHandlerImpl implements ContextHandler {
 
     @Override
     public ContextPhase deleteContext(Long userId) {
+        nameRepository.remove(userId);
         return phaseRepository.remove(userId);
     }
 }

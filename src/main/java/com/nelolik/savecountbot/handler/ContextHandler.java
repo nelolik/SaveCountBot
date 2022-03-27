@@ -2,9 +2,10 @@ package com.nelolik.savecountbot.handler;
 
 public interface ContextHandler {
     enum ContextPhase {
-        SAVE_RECORD_REQUESTED,
+        SAVE_COUNT_REQUESTED,
+        RECORD_NAME_FOR_SAVE_COUNT_ENTERED,
         NEW_RECORD_REQUESTED,
-        RECORD_NAME_ENTERED
+        DELETE_RECORD_REQUESTED
     }
 
     boolean hasContext(Long userId);

@@ -31,8 +31,10 @@ public class MessageHandlerImpl implements MessageHandler {
         SendMessage message = new SendMessage();
         if (messageHasText(update)) {
             message = handleTextMessage(update.getMessage());
-            log.info("Handled message to Id={} with text: {}", message.getChatId(),
-                    message.getText());
+            if (message != null) {
+                log.info("Handled message to Id={} with text: {}", message.getChatId(),
+                        message.getText());
+            }
         } else if (update.hasCallbackQuery()) {
             String queryData = update.getCallbackQuery().getData();
             log.info("Handled query with data: {}", queryData);
@@ -51,7 +53,7 @@ public class MessageHandlerImpl implements MessageHandler {
         answer.setText("");
 
         String messageText = message.getText();
-        if (messageText == null && messageText.isBlank()) {
+        if (messageText == null || messageText.isBlank()) {
             return null;
         }
         if (COMMAND_HELLO.equals(messageText)) {
@@ -60,6 +62,8 @@ public class MessageHandlerImpl implements MessageHandler {
             return textMessageHandler.handleLisOfRecordsCommand(message);
         } else if (messageText.startsWith(COMMAND_NEW_RECORD)) {
             return textMessageHandler.handleNewRecordCommand(message);
+        } else if (messageText.startsWith(COMMAND_NEW_COUNT)) {
+          return textMessageHandler.handleNewCountCommand(message);
         } else if (messageText.startsWith(COMMAND_DELETE_RECORD)) {
             return textMessageHandler.handleDeleteRecord(message);
         } else {
