@@ -171,4 +171,86 @@ public class TextMessageHandlerTest {
         verify(countsRepository, Mockito.only()).deleteAllByRecordid(recordId);
         verify(contextHandler, Mockito.only()).deleteContext(CHAT_ID);
     }
+
+    @Test
+    void handleTextMessageWithoutContext() {
+        when(message.getText()).thenReturn("");
+        when(contextHandler.hasContext(CHAT_ID)).thenReturn(false);
+        SendMessage messageWithoutContext = handler.handleTextMessage(message);
+        assertThat(messageWithoutContext).isNull();
+
+        when(contextHandler.hasContext(CHAT_ID)).thenReturn(true);
+        SendMessage messageWithoutText = handler.handleTextMessage(message);
+        assertThat(messageWithoutText).isNull();
+    }
+
+    @Test
+    void handleTextMessageNewRecordContext() {
+        when(message.getText()).thenReturn(RECORD_NAME);
+        when(contextHandler.hasContext(CHAT_ID)).thenReturn(true);
+        when(contextHandler.getContext(CHAT_ID)).thenReturn(ContextHandler.ContextPhase.NEW_RECORD_REQUESTED);
+        SendMessage sendMessage = handler.handleTextMessage(message);
+        assertThat(sendMessage).isNotNull().extracting(SendMessage::getText)
+                .isEqualTo(String.format(FORMAT_NEW_RECORD_CREATED, RECORD_NAME));
+        verify(recordsRepository, Mockito.atLeastOnce()).save(new Records(0L, CHAT_ID, RECORD_NAME));
+        verify(contextHandler, Mockito.atLeastOnce()).deleteContext(CHAT_ID);
+    }
+
+    @Test
+    void handleTextMessageDeleteRecordContext() {
+        Records record = RECORDS.get(0);
+        when(message.getText()).thenReturn(record.getRecordName());
+        when(contextHandler.hasContext(CHAT_ID)).thenReturn(true);
+        when(recordsRepository.findByRecordNameAndUserid(record.getRecordName(), CHAT_ID))
+                .thenReturn(RECORDS.subList(0, 1));
+        when(contextHandler.getContext(CHAT_ID)).thenReturn(ContextHandler.ContextPhase.DELETE_RECORD_REQUESTED);
+        when(recordsRepository.findByRecordNameAndUserid(RECORD_NAME, CHAT_ID)).thenReturn(RECORDS.subList(0, 1));
+        SendMessage sendMessage = handler.handleTextMessage(message);
+        assertThat(sendMessage).isNotNull().extracting(SendMessage::getText)
+                .isEqualTo(String.format(FORMAT_DELETE_RECORD_SUCCEED, record.getRecordName()));
+        verify(recordsRepository, Mockito.atLeastOnce()).deleteById(record.getId());
+        verify(countsRepository, Mockito.only()).deleteAllByRecordid(record.getId());
+        verify(contextHandler, Mockito.atLeastOnce()).deleteContext(CHAT_ID);
+    }
+
+    @Test
+    void handleTextMessageSaveCount() {
+        Long value = 200L;
+        List<Counts> counts = COUNTS_LIST.get(0);
+        long count = counts.stream().map(Counts::getCount).reduce(Long::sum).orElse(0L);
+        Records records = RECORDS.get(0);
+        when(message.getText()).thenReturn(value.toString());
+        when(contextHandler.hasContext(CHAT_ID)).thenReturn(true);
+        when(contextHandler.getContext(CHAT_ID))
+                .thenReturn(ContextHandler.ContextPhase.RECORD_NAME_FOR_SAVE_COUNT_ENTERED);
+        when(contextHandler.getRecordName(CHAT_ID)).thenReturn(records.getRecordName());
+        when(recordsRepository.findByRecordNameAndUserid(records.getRecordName(), records.getUserid()))
+                .thenReturn(RECORDS.subList(0, 1));
+        when(countsRepository.findByRecordid(records.getId())).thenReturn(counts);
+        SendMessage sendMessage = handler.handleTextMessage(message);
+        assertThat(sendMessage).isNotNull().extracting(SendMessage::getText)
+                .isEqualTo(records.getRecordName() + ": total " + count);
+        verify(countsRepository, Mockito.atLeastOnce()).save(new Counts(0L, records.getId(), value, Mockito.any()));
+        verify(contextHandler, Mockito.atLeastOnce()).deleteContext(CHAT_ID);
+    }
+
+    @Test
+    void handleTextMessageSaveCountNotANumber() {
+        String value = "Not a number";
+        List<Counts> counts = COUNTS_LIST.get(0);
+        long count = counts.stream().map(Counts::getCount).reduce(Long::sum).orElse(0L);
+        Records records = RECORDS.get(0);
+        when(message.getText()).thenReturn(value);
+        when(contextHandler.hasContext(CHAT_ID)).thenReturn(true);
+        when(contextHandler.getContext(CHAT_ID))
+                .thenReturn(ContextHandler.ContextPhase.RECORD_NAME_FOR_SAVE_COUNT_ENTERED);
+        SendMessage sendMessage = handler.handleTextMessage(message);
+        assertThat(sendMessage).isNotNull().extracting(SendMessage::getText)
+                .isEqualTo(TEXT_ERROR_PARSE_LONG);
+        verify(contextHandler, Mockito.never()).getRecordName(CHAT_ID);
+        verify(recordsRepository, Mockito.never()).findByRecordNameAndUserid(Mockito.any(), Mockito.any());
+        verify(countsRepository, Mockito.never()).findByRecordid(Mockito.any());
+        verify(countsRepository, Mockito.never()).save(Mockito.any());
+        verify(contextHandler, Mockito.never()).deleteContext(CHAT_ID);
+    }
 }

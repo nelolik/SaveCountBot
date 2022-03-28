@@ -199,17 +199,17 @@ public class TextMessageHandlerImpl implements TextMessageHandler {
                 answerText = String.format(FORMAT_RECORD_NOT_FOUND, text);
             }
         } else if (context == ContextHandler.ContextPhase.RECORD_NAME_FOR_SAVE_COUNT_ENTERED) {
-            Long longValue = Long.getLong(text);
-            if (longValue != null) {
+            try {
+                Long longValue = Long.parseLong(text);
                 String nameToSave = contextHandler.getRecordName(userId);
-                Records record = recordsRepository.findByRecordName(nameToSave).get(0);
+                Records record = recordsRepository.findByRecordNameAndUserid(nameToSave, userId).get(0);
                 countsRepository.save(new Counts(0L, record.getId(), longValue,
                         new Date(System.currentTimeMillis())));
                 contextHandler.deleteContext(userId);
                 List<Counts> counts = countsRepository.findByRecordid(record.getId());
                 Long sum = counts.stream().map(Counts::getCount).reduce(Long::sum).orElse(0L);
                 answerText = nameToSave + ": total " + sum.toString();
-            } else {
+            } catch (NumberFormatException e) {
                 answerText = TEXT_ERROR_PARSE_LONG;
             }
         }
