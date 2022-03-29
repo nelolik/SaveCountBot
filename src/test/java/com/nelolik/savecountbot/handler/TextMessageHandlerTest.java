@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class TextMessageHandlerTest {
+class TextMessageHandlerTest {
 
     @MockBean
     private RecordsRepository recordsRepository;

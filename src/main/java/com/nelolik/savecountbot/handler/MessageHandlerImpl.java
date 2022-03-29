@@ -3,6 +3,7 @@ package com.nelolik.savecountbot.handler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -48,7 +49,7 @@ public class MessageHandlerImpl implements MessageHandler {
         answer.setText("");
 
         String messageText = message.getText();
-        if (messageText == null || messageText.isBlank()) {
+        if (!StringUtils.hasText(messageText)) {
             return null;
         }
         if (COMMAND_HELLO.equals(messageText)) {

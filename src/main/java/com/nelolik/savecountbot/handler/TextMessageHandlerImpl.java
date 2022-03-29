@@ -6,6 +6,7 @@ import com.nelolik.savecountbot.repositroy.CountsRepository;
 import com.nelolik.savecountbot.repositroy.RecordsRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -120,7 +121,7 @@ public class TextMessageHandlerImpl implements TextMessageHandler {
         List<Records> records = recordsRepository.findByUserid(userId);
         SendMessage.SendMessageBuilder messageBuilder = SendMessage.builder()
                 .chatId(message.getChatId().toString());
-        if (records == null || records.size() == 0) {
+        if (CollectionUtils.isEmpty(records)) {
             return messageBuilder
                     .text(TEXT_NO_RECORD)
                     .build();
@@ -154,7 +155,7 @@ public class TextMessageHandlerImpl implements TextMessageHandler {
             contextHandler.deleteContext(userId);
             if (!arg.isBlank()) {
                 List<Records> recordFromDb = recordsRepository.findByRecordNameAndUserid(arg, userId);
-                if (recordFromDb != null && !recordFromDb.isEmpty()) {
+                if (!CollectionUtils.isEmpty(recordFromDb)) {
                     Records records = recordFromDb.get(0);
                     recordsRepository.deleteById(records.getId());
                     countsRepository.deleteAllByRecordid(records.getId());

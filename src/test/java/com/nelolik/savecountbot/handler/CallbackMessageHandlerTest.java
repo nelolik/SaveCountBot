@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class CallbackMessageHandlerTest {
+class CallbackMessageHandlerTest {
 
     private final Long USER_ID = 1234567L;
     private final String RECORD_NAME = "Record name";
