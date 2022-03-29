@@ -15,12 +15,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.nelolik.savecountbot.handler.CallbackMessageHandler.ADD_COUNT_BTN_DATA;
+import static com.nelolik.savecountbot.handler.CallbackMessageHandler.CREATE_RECORD_BTN_DATA;
+
 @Component
 @AllArgsConstructor
 public class TextMessageHandlerImpl implements TextMessageHandler {
 
     public static final String HELLO_MESSAGE = "Hello! Here you can save your repititions of anything you want!";
-    public static final String CREATE_BTN_DATA = "NEW_RECORD";
     public static final String CREATE_BTN_TEXT = "New record";
 
     public static final String TEXT_NO_RECORD = "You have no records.";
@@ -48,7 +50,7 @@ public class TextMessageHandlerImpl implements TextMessageHandler {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         InlineKeyboardButton btn = InlineKeyboardButton.builder()
                 .text(CREATE_BTN_TEXT)
-                .callbackData(CREATE_BTN_DATA)
+                .callbackData(CREATE_RECORD_BTN_DATA)
                 .build();
         List<InlineKeyboardButton> raw = List.of(btn);
         markup.setKeyboard(List.of(raw));
@@ -98,6 +100,7 @@ public class TextMessageHandlerImpl implements TextMessageHandler {
                     records) {
                 InlineKeyboardButton btn = new InlineKeyboardButton();
                 btn.setText(r.getRecordName());
+                btn.setCallbackData(ADD_COUNT_BTN_DATA + r.getRecordName());
                 keyboard.add(List.of(btn));
             }
             markup.setKeyboard(keyboard);

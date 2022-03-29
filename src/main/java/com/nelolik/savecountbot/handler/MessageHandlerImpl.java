@@ -17,15 +17,18 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.io.Serializable;
 import java.util.List;
 
+import static com.nelolik.savecountbot.handler.CallbackMessageHandler.ADD_COUNT_BTN_DATA;
+import static com.nelolik.savecountbot.handler.CallbackMessageHandler.CREATE_RECORD_BTN_DATA;
 import static com.nelolik.savecountbot.handler.TextMessageHandler.*;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
-//@AllArgsConstructor
+@AllArgsConstructor
 public class MessageHandlerImpl implements MessageHandler {
 
-    TextMessageHandler textMessageHandler;
+    private final TextMessageHandler textMessageHandler;
+
+    private final CallbackMessageHandler callbackMessageHandler;
 
     public SendMessage handle(Update update) {
         SendMessage message = new SendMessage();
@@ -37,6 +40,7 @@ public class MessageHandlerImpl implements MessageHandler {
             }
         } else if (update.hasCallbackQuery()) {
             String queryData = update.getCallbackQuery().getData();
+            message = handleCallbackMessage(update.getCallbackQuery());
             log.info("Handled query with data: {}", queryData);
         }
         return message;
@@ -68,6 +72,19 @@ public class MessageHandlerImpl implements MessageHandler {
             return textMessageHandler.handleDeleteRecord(message);
         } else {
             return textMessageHandler.handleTextMessage(message);
+        }
+    }
+
+    private SendMessage handleCallbackMessage(CallbackQuery callbackQuery) {
+        String data = callbackQuery.getData().trim();
+        Message message = callbackQuery.getMessage();
+        if (data.startsWith(CREATE_RECORD_BTN_DATA)) {
+            return callbackMessageHandler.handleCreateRecordCallback(message.getChatId());
+        } else if (data.startsWith(ADD_COUNT_BTN_DATA)) {
+            return callbackMessageHandler.handleSaveCountCallback(data, message.getChatId());
+        } else {
+            log.error("Callback query with unspecified callback data: {}", data);
+            return null;
         }
     }
 }
