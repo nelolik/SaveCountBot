@@ -15,7 +15,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.nelolik.savecountbot.handler.CallbackMessageHandler.ADD_COUNT_BTN_DATA;
 import static com.nelolik.savecountbot.handler.CallbackMessageHandler.CREATE_RECORD_BTN_DATA;
@@ -26,7 +25,7 @@ public class TextMessageHandlerImpl implements TextMessageHandler {
 
     public static final String HELLO_MESSAGE = "Hello! Here you can save your repititions of anything you want!";
     public static final String CREATE_BTN_TEXT = "New record";
-
+    public static final String FORMAT_LIST_OF_RECORDS = "Record: %s, count: %s";
     public static final String TEXT_NO_RECORD = "You have no records.";
     public static final String TEXT_ENTER_NEW_RECORD_NAME = "Enter new record name";
     public static final String FORMAT_NEW_RECORD_CREATED = "Record with name %s created.";
@@ -40,6 +39,7 @@ public class TextMessageHandlerImpl implements TextMessageHandler {
     public static final String FORMAT_RECORD_NOT_FOUND = "Record with name %s not found.";
     public static final String TEXT_WRONG_DELETE_ARG = "You entered wrong argument to " +
             COMMAND_DELETE_RECORD + " command.";
+    public static final String FORMAT_COUNT_SAVED = "%s: total %s";
 
     private final RecordsRepository recordsRepository;
 
@@ -133,7 +133,7 @@ public class TextMessageHandlerImpl implements TextMessageHandler {
             Long recId = r.getId();
             List<Counts> counts = countsRepository.findByRecordid(recId);
             Long sum = counts.stream().map(Counts::getCount).reduce(Long::sum).orElse(0L);
-            recordTexts.add("Record: " + r.getRecordName() + ", count: " + sum);
+            recordTexts.add(String.format(FORMAT_LIST_OF_RECORDS, r.getRecordName(), sum));
         }
         String messageText = String.join("\n", recordTexts);
         return messageBuilder
@@ -231,7 +231,7 @@ public class TextMessageHandlerImpl implements TextMessageHandler {
             String recordName = contextHandler.getRecordName(userId);
             saveCountToRepository(count, recordName, userId);
             Long sum = getSumOfCountsForRecord(recordName, userId);
-            return recordName + ": total " + sum.toString();
+            return String.format(FORMAT_COUNT_SAVED, recordName, sum);
         } catch (NumberFormatException e) {
             return TEXT_ERROR_PARSE_LONG;
         }

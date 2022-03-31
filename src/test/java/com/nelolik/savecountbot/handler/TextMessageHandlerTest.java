@@ -18,6 +18,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.*;
 
+import static com.nelolik.savecountbot.handler.TestConstants.*;
 import static com.nelolik.savecountbot.handler.TextMessageHandler.COMMAND_NEW_RECORD;
 import static com.nelolik.savecountbot.handler.TextMessageHandlerImpl.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,15 +42,13 @@ class TextMessageHandlerTest {
     @Autowired
     private TextMessageHandler handler;
 
-    private static final Long CHAT_ID = 1234567L;
     private static final List<Records> RECORDS = new ArrayList<>();
     private static final List<List<Counts>> COUNTS_LIST = new ArrayList<>();
     private static final String LIST_OF_RECORDS_TEXT = """
             Record: Name1, count: 600
             Record: Name2, count: 600
             Record: Name3, count: 600""";
-    private static final String WRONG_COMMAND = "/wrong_command";
-    private static final String RECORD_NAME = "Record Name";
+
     private static final String COMMAND_NEW_RECORD_WITH_ARG = COMMAND_NEW_RECORD + " " + RECORD_NAME;
 
     private static final String COMMAND_DELETE_RECORD_WITH_ARG = COMMAND_DELETE_RECORD + " " + RECORD_NAME;
