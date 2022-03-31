@@ -15,6 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.nelolik.savecountbot.handler.CallbackMessageHandler.ADD_COUNT_BTN_DATA;
 import static com.nelolik.savecountbot.handler.CallbackMessageHandler.CREATE_RECORD_BTN_DATA;
@@ -126,14 +127,15 @@ public class TextMessageHandlerImpl implements TextMessageHandler {
                     .text(TEXT_NO_RECORD)
                     .build();
         }
-        String messageText = "";
+        List<String> recordTexts = new ArrayList<>();
         for (Records r :
                 records) {
             Long recId = r.getId();
             List<Counts> counts = countsRepository.findByRecordid(recId);
             Long sum = counts.stream().map(Counts::getCount).reduce(Long::sum).orElse(0L);
-            messageText += "Record: " + r.getRecordName() + ", count: " + sum + "\n";
+            recordTexts.add("Record: " + r.getRecordName() + ", count: " + sum);
         }
+        String messageText = String.join("\n", recordTexts);
         return messageBuilder
                 .text(messageText)
                 .build();
@@ -185,37 +187,11 @@ public class TextMessageHandlerImpl implements TextMessageHandler {
         String answerText = "";
         ContextHandler.ContextPhase context = contextHandler.getContext(userId);
         if (context == ContextHandler.ContextPhase.NEW_RECORD_REQUESTED) {
-            if (!isRecordPresent(text, userId)) {
-                recordsRepository.save(new Records(0L, userId, text));
-                contextHandler.deleteContext(userId);
-                answerText = String.format(FORMAT_NEW_RECORD_CREATED, text);
-            } else {
-                answerText = TEXT_NAME_IS_NOT_UNIQ;
-            }
+            answerText = trySaveNewRecordAndGetAnswerText(text, userId);
         } else if (context == ContextHandler.ContextPhase.DELETE_RECORD_REQUESTED) {
-            if (isRecordPresent(text, userId)) {
-                Records recordToDelete = recordsRepository.findByRecordNameAndUserid(text, userId).get(0);
-                recordsRepository.deleteById(recordToDelete.getId());
-                countsRepository.deleteAllByRecordid(recordToDelete.getId());
-                contextHandler.deleteContext(userId);
-                answerText = String.format(FORMAT_DELETE_RECORD_SUCCEED, text);
-            } else {
-                answerText = String.format(FORMAT_RECORD_NOT_FOUND, text);
-            }
+            answerText = tryDeleteRecordAndGetAnswerText(text, userId);
         } else if (context == ContextHandler.ContextPhase.RECORD_NAME_FOR_SAVE_COUNT_ENTERED) {
-            try {
-                Long longValue = Long.parseLong(text);
-                String nameToSave = contextHandler.getRecordName(userId);
-                Records record = recordsRepository.findByRecordNameAndUserid(nameToSave, userId).get(0);
-                countsRepository.save(new Counts(0L, record.getId(), longValue,
-                        new Date(System.currentTimeMillis())));
-                contextHandler.deleteContext(userId);
-                List<Counts> counts = countsRepository.findByRecordid(record.getId());
-                Long sum = counts.stream().map(Counts::getCount).reduce(Long::sum).orElse(0L);
-                answerText = nameToSave + ": total " + sum.toString();
-            } catch (NumberFormatException e) {
-                answerText = TEXT_ERROR_PARSE_LONG;
-            }
+            answerText = trySaveCountAndGetAnswerText(text, userId);
         }
         return SendMessage.builder()
                 .chatId(message.getChatId().toString())
@@ -225,5 +201,51 @@ public class TextMessageHandlerImpl implements TextMessageHandler {
 
     private boolean isRecordPresent(String recordName, Long userId) {
         return  !recordsRepository.findByRecordNameAndUserid(recordName, userId).isEmpty();
+    }
+
+    private String trySaveNewRecordAndGetAnswerText(String recordName, Long userId) {
+        if (!isRecordPresent(recordName, userId)) {
+            recordsRepository.save(new Records(0L, userId, recordName));
+            contextHandler.deleteContext(userId);
+            return String.format(FORMAT_NEW_RECORD_CREATED, recordName);
+        } else {
+            return TEXT_NAME_IS_NOT_UNIQ;
+        }
+    }
+
+    private String tryDeleteRecordAndGetAnswerText(String recordName, Long userId) {
+        if (isRecordPresent(recordName, userId)) {
+            Records recordToDelete = recordsRepository.findByRecordNameAndUserid(recordName, userId).get(0);
+            recordsRepository.deleteById(recordToDelete.getId());
+            countsRepository.deleteAllByRecordid(recordToDelete.getId());
+            contextHandler.deleteContext(userId);
+            return String.format(FORMAT_DELETE_RECORD_SUCCEED, recordName);
+        } else {
+            return String.format(FORMAT_RECORD_NOT_FOUND, recordName);
+        }
+    }
+
+    private String trySaveCountAndGetAnswerText(String input, Long userId) {
+        try {
+            Long count = Long.parseLong(input);
+            String recordName = contextHandler.getRecordName(userId);
+            saveCountToRepository(count, recordName, userId);
+            Long sum = getSumOfCountsForRecord(recordName, userId);
+            return recordName + ": total " + sum.toString();
+        } catch (NumberFormatException e) {
+            return TEXT_ERROR_PARSE_LONG;
+        }
+    }
+    private void saveCountToRepository(Long count, String recordName, Long userId) {
+        Records record = recordsRepository.findByRecordNameAndUserid(recordName, userId).get(0);
+        countsRepository.save(new Counts(0L, record.getId(), count,
+                new Date(System.currentTimeMillis())));
+        contextHandler.deleteContext(userId);
+    }
+
+    private Long getSumOfCountsForRecord(String recordName, Long userId) {
+        Records record = recordsRepository.findByRecordNameAndUserid(recordName, userId).get(0);
+        List<Counts> counts = countsRepository.findByRecordid(record.getId());
+        return counts.stream().map(Counts::getCount).reduce(Long::sum).orElse(0L);
     }
 }
