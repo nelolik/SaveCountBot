@@ -1,5 +1,7 @@
 package com.nelolik.savecountbot.handler;
 
+import com.nelolik.savecountbot.handler.callback.CallbackHandler;
+import com.nelolik.savecountbot.handler.message.TextHandler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -9,38 +11,30 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import static com.nelolik.savecountbot.handler.CallbackMessageHandler.ADD_COUNT_BTN_DATA;
-import static com.nelolik.savecountbot.handler.CallbackMessageHandler.CREATE_RECORD_BTN_DATA;
-import static com.nelolik.savecountbot.handler.TextMessageHandler.*;
+import java.util.Map;
 
 @Slf4j
 @Component
 @AllArgsConstructor
 public class MessageHandlerImpl implements MessageHandler {
 
-    private final TextMessageHandler textMessageHandler;
+    private Map<String, TextHandler> textMessageHandlers;
 
-    private final CallbackMessageHandler callbackMessageHandler;
+    private Map<String, CallbackHandler> callbackHandlers;
 
     public SendMessage handle(Update update) {
         SendMessage message = new SendMessage();
-        if (messageHasText(update)) {
+        if (MessageUtils.messageHasText(update)) {
             message = handleTextMessage(update.getMessage());
-            if (message != null) {
-                log.info("Handled message to Id={} with text: {}", message.getChatId(),
-                        message.getText());
-            }
+
         } else if (update.hasCallbackQuery()) {
-            String queryData = update.getCallbackQuery().getData();
-            message = handleCallbackMessage(update.getCallbackQuery());
-            log.info("Handled query with data: {}", queryData);
+            message = handleCallback(update.getCallbackQuery());
+        }
+        if (message != null) {
+            log.info("Handled message to Id={} with text: {}", message.getChatId(),
+                    message.getText());
         }
         return message;
-    }
-
-
-    private boolean messageHasText(Update update) {
-        return !update.hasCallbackQuery() && update.hasMessage() && update.getMessage().hasText();
     }
 
     private SendMessage handleTextMessage(Message message) {
@@ -50,33 +44,21 @@ public class MessageHandlerImpl implements MessageHandler {
 
         String messageText = message.getText();
         if (!StringUtils.hasText(messageText)) {
+            log.error("Request with message without text");
             return null;
         }
-        if (COMMAND_HELLO.equals(messageText)) {
-            return textMessageHandler.handleHelloCommand(message);
-        } else if (messageText.startsWith(COMMAND_LIST_OF_RECORDS)) {
-            return textMessageHandler.handleLisOfRecordsCommand(message);
-        } else if (messageText.startsWith(COMMAND_NEW_RECORD)) {
-            return textMessageHandler.handleNewRecordCommand(message);
-        } else if (messageText.startsWith(COMMAND_NEW_COUNT)) {
-          return textMessageHandler.handleNewCountCommand(message);
-        } else if (messageText.startsWith(COMMAND_DELETE_RECORD)) {
-            return textMessageHandler.handleDeleteRecord(message);
-        } else {
-            return textMessageHandler.handleTextMessage(message);
-        }
+        String command = MessageUtils.extractCommand(messageText);
+        TextHandler textHandler = textMessageHandlers.get(command);
+        return textHandler.handle(message);
     }
 
-    private SendMessage handleCallbackMessage(CallbackQuery callbackQuery) {
-        String data = callbackQuery.getData().trim();
-        Message message = callbackQuery.getMessage();
-        if (data.startsWith(CREATE_RECORD_BTN_DATA)) {
-            return callbackMessageHandler.handleCreateRecordCallback(message.getChatId());
-        } else if (data.startsWith(ADD_COUNT_BTN_DATA)) {
-            return callbackMessageHandler.handleSaveCountCallback(data, message.getChatId());
-        } else {
-            log.error("Callback query with unspecified callback data: {}", data);
+    private SendMessage handleCallback(CallbackQuery callbackQuery) {
+        String queryData = callbackQuery.getData();
+        if (!StringUtils.hasText(queryData)) {
+            log.error("Callback query with empty data");
             return null;
         }
+        String data = MessageUtils.extractCallbackData(queryData);
+        return callbackHandlers.get(data).handle(callbackQuery);
     }
 }

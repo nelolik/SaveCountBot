@@ -1,5 +1,6 @@
 package com.nelolik.savecountbot.handler;
 
+import com.nelolik.savecountbot.handler.context.ContextHandler;
 import com.nelolik.savecountbot.model.Records;
 import com.nelolik.savecountbot.repositroy.RecordsRepository;
 import org.assertj.core.groups.Tuple;
@@ -20,13 +21,13 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.List;
 
-import static com.nelolik.savecountbot.handler.CallbackMessageHandler.ADD_COUNT_BTN_DATA;
-import static com.nelolik.savecountbot.handler.CallbackMessageHandler.CREATE_RECORD_BTN_DATA;
-import static com.nelolik.savecountbot.handler.CallbackMessageHandlerImpl.TEXT_ENTER_COUNT;
-import static com.nelolik.savecountbot.handler.ContextHandler.ContextPhase.*;
+import static com.nelolik.savecountbot.handler.callback.CallbackData.ADD_COUNT_BTN_DATA;
+import static com.nelolik.savecountbot.handler.callback.CallbackData.CREATE_RECORD_BTN_DATA;
+import static com.nelolik.savecountbot.handler.callback.CallbackStringConstants.TEXT_ENTER_COUNT;
 import static com.nelolik.savecountbot.handler.TestConstants.*;
-import static com.nelolik.savecountbot.handler.TextMessageHandler.COMMAND_NEW_RECORD;
-import static com.nelolik.savecountbot.handler.TextMessageHandlerImpl.*;
+import static com.nelolik.savecountbot.handler.context.ContextPhase.*;
+import static com.nelolik.savecountbot.handler.message.ApiCommands.*;
+import static com.nelolik.savecountbot.handler.message.StringConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,9 +57,6 @@ class MessageHandlerTest {
 
     @Autowired
     private MessageHandler messageHandler;
-
-    @Autowired
-    private CallbackMessageHandler callbackMessageHandler;
 
     @Autowired
     private RecordsRepository recordsRepository;
@@ -103,7 +101,7 @@ class MessageHandlerTest {
         //Given:
         Message message = new Message();
         message.setChat(CHAT);
-        message.setText(COMMAND_NEW_RECORD + RECORD_NAME);
+        message.setText(COMMAND_NEW_RECORD + " " + RECORD_NAME);
         Update update = new Update();
         update.setMessage(message);
         //When:
@@ -192,7 +190,7 @@ class MessageHandlerTest {
         //Given:
         Message message = new Message();
         message.setChat(CHAT);
-        message.setText(COMMAND_DELETE_RECORD + RECORD1);
+        message.setText(COMMAND_DELETE_RECORD + " " + RECORD1);
         Update update = new Update();
         update.setMessage(message);
         //When:
