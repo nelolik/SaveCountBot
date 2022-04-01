@@ -19,7 +19,7 @@ public class MessageUtils {
     }
 
     public String extractCommand(String text) {
-        String[] words = text.split(" ");
+        String[] words = text.split("\s");
         List<String> commands = Arrays.stream(ApiCommands.class.getDeclaredFields()).map(f -> {
             try {
                 return (String) f.get(null);

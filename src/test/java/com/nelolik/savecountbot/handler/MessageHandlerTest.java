@@ -101,7 +101,7 @@ class MessageHandlerTest {
         //Given:
         Message message = new Message();
         message.setChat(CHAT);
-        message.setText(COMMAND_NEW_RECORD + " " + RECORD_NAME);
+        message.setText(String.format("%s %s", COMMAND_NEW_RECORD,RECORD_NAME));
         Update update = new Update();
         update.setMessage(message);
         //When:
@@ -190,7 +190,7 @@ class MessageHandlerTest {
         //Given:
         Message message = new Message();
         message.setChat(CHAT);
-        message.setText(COMMAND_DELETE_RECORD + " " + RECORD1);
+        message.setText(String.format("%s %s", COMMAND_DELETE_RECORD, RECORD1));
         Update update = new Update();
         update.setMessage(message);
         //When:

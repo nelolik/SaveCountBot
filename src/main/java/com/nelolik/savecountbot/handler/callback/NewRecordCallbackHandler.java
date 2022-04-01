@@ -13,15 +13,14 @@ import static com.nelolik.savecountbot.handler.context.ContextPhase.NEW_RECORD_R
 
 @Component(CREATE_RECORD_BTN_DATA)
 @RequiredArgsConstructor
-public class NewRecordCallbackHandler implements CallbackHandler{
+public class NewRecordCallbackHandler implements CallbackHandler {
 
     private final ContextHandler contextHandler;
 
     @Override
     public SendMessage handle(CallbackQuery callbackQuery) {
         Long userId = callbackQuery.getMessage().getChatId();
-        contextHandler.saveContext(userId,
-                NEW_RECORD_REQUESTED);
+        contextHandler.saveContext(userId, NEW_RECORD_REQUESTED);
         return SendMessage.builder()
                 .text(TEXT_ENTER_NEW_RECORD_NAME)
                 .chatId(userId.toString())
