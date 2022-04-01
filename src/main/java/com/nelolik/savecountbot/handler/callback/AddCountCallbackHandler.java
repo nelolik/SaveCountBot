@@ -1,34 +1,29 @@
-package com.nelolik.savecountbot.handler;
+package com.nelolik.savecountbot.handler.callback;
 
+import com.nelolik.savecountbot.handler.context.ContextHandler;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
-import static com.nelolik.savecountbot.handler.ContextHandler.ContextPhase.RECORD_NAME_FOR_SAVE_COUNT_ENTERED;
+import static com.nelolik.savecountbot.handler.callback.CallbackData.ADD_COUNT_BTN_DATA;
+import static com.nelolik.savecountbot.handler.callback.CallbackStringConstants.TEXT_ENTER_COUNT;
+import static com.nelolik.savecountbot.handler.callback.CallbackStringConstants.TEXT_ERROR_COMMAND_PROCESSING;
+import static com.nelolik.savecountbot.handler.context.ContextPhase.RECORD_NAME_FOR_SAVE_COUNT_ENTERED;
 
-@Component
+@Component(ADD_COUNT_BTN_DATA)
 @RequiredArgsConstructor
 @Slf4j
-public class CallbackMessageHandlerImpl implements CallbackMessageHandler {
-
-    public static final String TEXT_ENTER_NEW_RECORD_NAME = "Enter new record name";
-    public static final String TEXT_ERROR_COMMAND_PROCESSING = "An error occurred during command processing. Try again.";
-    public static final String TEXT_ENTER_COUNT = "Enter count you want to save";
+public class AddCountCallbackHandler implements CallbackHandler {
 
     private final ContextHandler contextHandler;
 
     @Override
-    public SendMessage handleCreateRecordCallback(Long userId) {
-        contextHandler.saveContext(userId, ContextHandler.ContextPhase.NEW_RECORD_REQUESTED);
-        return SendMessage.builder()
-                .text(TEXT_ENTER_NEW_RECORD_NAME)
-                .chatId(userId.toString())
-                .build();
-    }
-
-    @Override
-    public SendMessage handleSaveCountCallback(String data, Long userId) {
+    public SendMessage handle(CallbackQuery callbackQuery) {
+        Long userId = callbackQuery.getMessage().getChatId();
+        String data = callbackQuery.getData().trim();
         if (!contextHandler.hasContext(userId)) {
             log.error("Context not found while processing ADD_COUNT callback query");
             return SendMessage.builder()
@@ -43,7 +38,7 @@ public class CallbackMessageHandlerImpl implements CallbackMessageHandler {
                     .chatId(userId.toString())
                     .build();
         }
-        String recordName = data.substring(ADD_COUNT_BTN_DATA.length());
+        String recordName = data.substring(ADD_COUNT_BTN_DATA.length()).trim();
         contextHandler.saveContext(userId, RECORD_NAME_FOR_SAVE_COUNT_ENTERED);
         contextHandler.saveRecordName(userId, recordName);
         return SendMessage.builder()
