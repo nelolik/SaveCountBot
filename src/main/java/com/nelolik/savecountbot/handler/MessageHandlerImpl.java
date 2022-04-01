@@ -3,6 +3,7 @@ package com.nelolik.savecountbot.handler;
 import com.nelolik.savecountbot.handler.callback.CallbackHandler;
 import com.nelolik.savecountbot.handler.message.TextHandler;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -15,12 +16,12 @@ import java.util.Map;
 
 @Slf4j
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MessageHandlerImpl implements MessageHandler {
 
-    private Map<String, TextHandler> textMessageHandlers;
+    private final Map<String, TextHandler> textMessageHandlers;
 
-    private Map<String, CallbackHandler> callbackHandlers;
+    private final Map<String, CallbackHandler> callbackHandlers;
 
     public SendMessage handle(Update update) {
         SendMessage message = new SendMessage();

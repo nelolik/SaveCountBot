@@ -17,8 +17,6 @@ import static com.nelolik.savecountbot.handler.message.StringConstants.HELLO_MES
 @Component(COMMAND_HELLO)
 public class HelloCommandHandler implements TextHandler{
 
-
-
     @Override
     public SendMessage handle(Message message) {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();

@@ -2,6 +2,7 @@ package com.nelolik.savecountbot.handler;
 
 import com.nelolik.savecountbot.handler.callback.CallbackData;
 import com.nelolik.savecountbot.handler.message.ApiCommands;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.Update;
 

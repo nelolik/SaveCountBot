@@ -14,14 +14,14 @@ import static com.nelolik.savecountbot.handler.context.ContextPhase.NEW_RECORD_R
 import static com.nelolik.savecountbot.handler.message.ApiCommands.COMMAND_NEW_RECORD;
 
 @Component(COMMAND_NEW_RECORD)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class NewRecordCommandHandler implements TextHandler{
 
     public static final String FORMAT_NEW_RECORD_CREATED = "Record with name %s created.";
 
-    private ContextHandler contextHandler;
+    private final ContextHandler contextHandler;
 
-    private RecordsRepository recordsRepository;
+    private final RecordsRepository recordsRepository;
 
     @Override
     public SendMessage handle(Message message) {

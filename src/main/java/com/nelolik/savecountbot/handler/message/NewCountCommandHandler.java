@@ -20,12 +20,12 @@ import static com.nelolik.savecountbot.handler.message.ApiCommands.COMMAND_NEW_C
 import static com.nelolik.savecountbot.handler.message.StringConstants.TEXT_CHOOSE_RECORD;
 
 @Component(COMMAND_NEW_COUNT)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class NewCountCommandHandler implements TextHandler {
 
-    private ContextHandler contextHandler;
+    private final ContextHandler contextHandler;
 
-    private RecordsRepository recordsRepository;
+    private final RecordsRepository recordsRepository;
 
     @Override
     public SendMessage handle(Message message) {

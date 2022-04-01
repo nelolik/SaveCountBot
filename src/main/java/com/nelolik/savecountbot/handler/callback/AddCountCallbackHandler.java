@@ -2,6 +2,7 @@ package com.nelolik.savecountbot.handler.callback;
 
 import com.nelolik.savecountbot.handler.context.ContextHandler;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -13,11 +14,11 @@ import static com.nelolik.savecountbot.handler.callback.CallbackStringConstants.
 import static com.nelolik.savecountbot.handler.context.ContextPhase.RECORD_NAME_FOR_SAVE_COUNT_ENTERED;
 
 @Component(ADD_COUNT_BTN_DATA)
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class AddCountCallbackHandler implements CallbackHandler {
 
-    private ContextHandler contextHandler;
+    private final ContextHandler contextHandler;
 
     @Override
     public SendMessage handle(CallbackQuery callbackQuery) {

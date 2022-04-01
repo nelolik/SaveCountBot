@@ -19,12 +19,12 @@ import static com.nelolik.savecountbot.handler.message.StringConstants.FORMAT_LI
 import static com.nelolik.savecountbot.handler.message.StringConstants.TEXT_NO_RECORD;
 
 @Component(COMMAND_LIST_OF_RECORDS)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ListOfRecordsCommandHandler implements TextHandler {
 
-    private RecordsRepository recordsRepository;
+    private final RecordsRepository recordsRepository;
 
-    private CountsRepository countsRepository;
+    private final CountsRepository countsRepository;
 
     @Override
     public SendMessage handle(Message message) {

@@ -20,14 +20,14 @@ import static com.nelolik.savecountbot.handler.message.ApiCommands.NO_COMMAND;
 import static com.nelolik.savecountbot.handler.message.StringConstants.*;
 
 @Component(NO_COMMAND)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class NoCommandTextHandler implements TextHandler {
 
-    private ContextHandler contextHandler;
+    private final ContextHandler contextHandler;
 
-    private RecordsRepository recordsRepository;
+    private final RecordsRepository recordsRepository;
 
-    private CountsRepository countsRepository;
+    private final CountsRepository countsRepository;
 
     @Override
     public SendMessage handle(Message message) {

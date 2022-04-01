@@ -18,14 +18,14 @@ import static com.nelolik.savecountbot.handler.message.ApiCommands.COMMAND_DELET
 import static com.nelolik.savecountbot.handler.message.StringConstants.*;
 
 @Component(COMMAND_DELETE_RECORD)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DeleteRecordCommandHandler implements TextHandler {
 
-    private ContextHandler contextHandler;
+    private final ContextHandler contextHandler;
 
-    private RecordsRepository recordsRepository;
+    private final RecordsRepository recordsRepository;
 
-    private CountsRepository countsRepository;
+    private final CountsRepository countsRepository;
 
     @Override
     public SendMessage handle(Message message) {
