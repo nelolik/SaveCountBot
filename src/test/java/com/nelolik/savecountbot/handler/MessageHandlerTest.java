@@ -214,6 +214,7 @@ class MessageHandlerTest {
         when(contextHandler.hasContext(Mockito.any())).thenReturn(false);
         //When:
         SendMessage sendMessage = messageHandler.handle(update);
+        //Then:
         assertThat(sendMessage).isNull();
     }
 
