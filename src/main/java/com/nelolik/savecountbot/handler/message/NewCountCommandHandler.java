@@ -3,7 +3,6 @@ package com.nelolik.savecountbot.handler.message;
 import com.nelolik.savecountbot.handler.context.ContextHandler;
 import com.nelolik.savecountbot.model.Records;
 import com.nelolik.savecountbot.repositroy.RecordsRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -17,9 +16,10 @@ import java.util.List;
 import static com.nelolik.savecountbot.handler.callback.CallbackData.ADD_COUNT_BTN_DATA;
 import static com.nelolik.savecountbot.handler.context.ContextPhase.SAVE_COUNT_REQUESTED;
 import static com.nelolik.savecountbot.handler.message.ApiCommands.COMMAND_NEW_COUNT;
-import static com.nelolik.savecountbot.handler.message.StringConstants.TEXT_CHOOSE_RECORD;
+import static com.nelolik.savecountbot.handler.message.MessageStringConstants.BEEN_POSTFIX;
+import static com.nelolik.savecountbot.handler.message.MessageStringConstants.TEXT_CHOOSE_RECORD;
 
-@Component(COMMAND_NEW_COUNT)
+@Component(COMMAND_NEW_COUNT + BEEN_POSTFIX)
 @RequiredArgsConstructor
 public class NewCountCommandHandler implements TextHandler {
 

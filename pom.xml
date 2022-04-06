@@ -6,7 +6,7 @@
 
     <groupId>org.nelolik.savecountbot</groupId>
     <artifactId>SaveCountBot</artifactId>
-    <version>0.1</version>
+    <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>

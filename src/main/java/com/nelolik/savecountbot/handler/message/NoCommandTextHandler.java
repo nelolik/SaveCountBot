@@ -6,7 +6,6 @@ import com.nelolik.savecountbot.model.Counts;
 import com.nelolik.savecountbot.model.Records;
 import com.nelolik.savecountbot.repositroy.CountsRepository;
 import com.nelolik.savecountbot.repositroy.RecordsRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -17,9 +16,9 @@ import java.util.List;
 
 import static com.nelolik.savecountbot.handler.context.ContextPhase.*;
 import static com.nelolik.savecountbot.handler.message.ApiCommands.NO_COMMAND;
-import static com.nelolik.savecountbot.handler.message.StringConstants.*;
+import static com.nelolik.savecountbot.handler.message.MessageStringConstants.*;
 
-@Component(NO_COMMAND)
+@Component(NO_COMMAND + BEEN_POSTFIX)
 @RequiredArgsConstructor
 public class NoCommandTextHandler implements TextHandler {
 

@@ -9,11 +9,10 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 import static com.nelolik.savecountbot.handler.callback.CallbackData.ADD_COUNT_BTN_DATA;
-import static com.nelolik.savecountbot.handler.callback.CallbackStringConstants.TEXT_ENTER_COUNT;
-import static com.nelolik.savecountbot.handler.callback.CallbackStringConstants.TEXT_ERROR_COMMAND_PROCESSING;
+import static com.nelolik.savecountbot.handler.callback.CallbackStringConstants.*;
 import static com.nelolik.savecountbot.handler.context.ContextPhase.RECORD_NAME_FOR_SAVE_COUNT_ENTERED;
 
-@Component(ADD_COUNT_BTN_DATA)
+@Component(ADD_COUNT_BTN_DATA + BEEN_POSTFIX)
 @RequiredArgsConstructor
 @Slf4j
 public class AddCountCallbackHandler implements CallbackHandler {

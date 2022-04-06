@@ -3,17 +3,17 @@ package com.nelolik.savecountbot.handler.message;
 import com.nelolik.savecountbot.handler.context.ContextHandler;
 import com.nelolik.savecountbot.model.Records;
 import com.nelolik.savecountbot.repositroy.RecordsRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-import static com.nelolik.savecountbot.handler.message.StringConstants.TEXT_ENTER_NEW_RECORD_NAME;
+import static com.nelolik.savecountbot.handler.message.MessageStringConstants.BEEN_POSTFIX;
+import static com.nelolik.savecountbot.handler.message.MessageStringConstants.TEXT_ENTER_NEW_RECORD_NAME;
 import static com.nelolik.savecountbot.handler.context.ContextPhase.NEW_RECORD_REQUESTED;
 import static com.nelolik.savecountbot.handler.message.ApiCommands.COMMAND_NEW_RECORD;
 
-@Component(COMMAND_NEW_RECORD)
+@Component(COMMAND_NEW_RECORD + BEEN_POSTFIX)
 @RequiredArgsConstructor
 public class NewRecordCommandHandler implements TextHandler{
 

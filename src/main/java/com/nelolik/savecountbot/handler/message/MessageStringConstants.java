@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 import static com.nelolik.savecountbot.handler.message.ApiCommands.COMMAND_DELETE_RECORD;
 
 @UtilityClass
-public class StringConstants {
+public class MessageStringConstants {
 
     public static final String HELLO_MESSAGE = "Hello! Here you can save your repetitions of anything you want!";
     public static final String CREATE_BTN_TEXT = "New record";
@@ -27,4 +27,6 @@ public class StringConstants {
 
     public static final String FORMAT_LIST_OF_RECORDS = "Record: %s, count: %s";
     public static final String TEXT_NO_RECORD = "You have no records.";
+
+    public static final String BEEN_POSTFIX = "_been";
 }

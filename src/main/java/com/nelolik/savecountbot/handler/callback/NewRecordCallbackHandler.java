@@ -8,10 +8,11 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 import static com.nelolik.savecountbot.handler.callback.CallbackData.CREATE_RECORD_BTN_DATA;
+import static com.nelolik.savecountbot.handler.callback.CallbackStringConstants.BEEN_POSTFIX;
 import static com.nelolik.savecountbot.handler.callback.CallbackStringConstants.TEXT_ENTER_NEW_RECORD_NAME;
 import static com.nelolik.savecountbot.handler.context.ContextPhase.NEW_RECORD_REQUESTED;
 
-@Component(CREATE_RECORD_BTN_DATA)
+@Component(CREATE_RECORD_BTN_DATA + BEEN_POSTFIX)
 @RequiredArgsConstructor
 public class NewRecordCallbackHandler implements CallbackHandler {
 

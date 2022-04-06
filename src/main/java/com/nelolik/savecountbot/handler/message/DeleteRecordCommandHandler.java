@@ -4,7 +4,6 @@ import com.nelolik.savecountbot.handler.context.ContextHandler;
 import com.nelolik.savecountbot.model.Records;
 import com.nelolik.savecountbot.repositroy.CountsRepository;
 import com.nelolik.savecountbot.repositroy.RecordsRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -15,9 +14,9 @@ import java.util.List;
 
 import static com.nelolik.savecountbot.handler.context.ContextPhase.DELETE_RECORD_REQUESTED;
 import static com.nelolik.savecountbot.handler.message.ApiCommands.COMMAND_DELETE_RECORD;
-import static com.nelolik.savecountbot.handler.message.StringConstants.*;
+import static com.nelolik.savecountbot.handler.message.MessageStringConstants.*;
 
-@Component(COMMAND_DELETE_RECORD)
+@Component(COMMAND_DELETE_RECORD + BEEN_POSTFIX)
 @RequiredArgsConstructor
 public class DeleteRecordCommandHandler implements TextHandler {
 

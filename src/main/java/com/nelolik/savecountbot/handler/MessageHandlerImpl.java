@@ -1,8 +1,9 @@
 package com.nelolik.savecountbot.handler;
 
 import com.nelolik.savecountbot.handler.callback.CallbackHandler;
+import com.nelolik.savecountbot.handler.callback.CallbackStringConstants;
+import com.nelolik.savecountbot.handler.message.MessageStringConstants;
 import com.nelolik.savecountbot.handler.message.TextHandler;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -49,7 +50,7 @@ public class MessageHandlerImpl implements MessageHandler {
             return null;
         }
         String command = MessageUtils.extractCommand(messageText);
-        TextHandler textHandler = textMessageHandlers.get(command);
+        TextHandler textHandler = textMessageHandlers.get(command + MessageStringConstants.BEEN_POSTFIX);
         return textHandler.handle(message);
     }
 
@@ -60,6 +61,6 @@ public class MessageHandlerImpl implements MessageHandler {
             return null;
         }
         String data = MessageUtils.extractCallbackData(queryData);
-        return callbackHandlers.get(data).handle(callbackQuery);
+        return callbackHandlers.get(data + CallbackStringConstants.BEEN_POSTFIX).handle(callbackQuery);
     }
 }

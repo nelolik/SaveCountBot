@@ -10,11 +10,10 @@ import java.util.List;
 
 import static com.nelolik.savecountbot.handler.callback.CallbackData.CREATE_RECORD_BTN_DATA;
 import static com.nelolik.savecountbot.handler.message.ApiCommands.COMMAND_HELLO;
-import static com.nelolik.savecountbot.handler.message.StringConstants.CREATE_BTN_TEXT;
-import static com.nelolik.savecountbot.handler.message.StringConstants.HELLO_MESSAGE;
+import static com.nelolik.savecountbot.handler.message.MessageStringConstants.*;
 
 
-@Component(COMMAND_HELLO)
+@Component(COMMAND_HELLO + BEEN_POSTFIX)
 public class HelloCommandHandler implements TextHandler {
 
     @Override

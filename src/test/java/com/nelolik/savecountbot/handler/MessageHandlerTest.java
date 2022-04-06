@@ -27,7 +27,7 @@ import static com.nelolik.savecountbot.handler.callback.CallbackStringConstants.
 import static com.nelolik.savecountbot.handler.TestConstants.*;
 import static com.nelolik.savecountbot.handler.context.ContextPhase.*;
 import static com.nelolik.savecountbot.handler.message.ApiCommands.*;
-import static com.nelolik.savecountbot.handler.message.StringConstants.*;
+import static com.nelolik.savecountbot.handler.message.MessageStringConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
