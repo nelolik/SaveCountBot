@@ -1,16 +1,19 @@
 package com.nelolik.savecountbot.handler;
 
+import com.nelolik.savecountbot.Bot;
 import com.nelolik.savecountbot.handler.context.ContextHandler;
 import com.nelolik.savecountbot.model.Records;
 import com.nelolik.savecountbot.repositroy.RecordsRepository;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -63,6 +66,10 @@ class MessageHandlerTest {
 
     @MockBean
     private ContextHandler contextHandler;
+
+    //Added to prevent asking bot`s name and token and connecting to server in test
+    @MockBean
+    private TelegramBotsApi telegramBotsApi;
 
     @Test
     void helloCommandTest() {
