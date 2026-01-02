@@ -1,11 +1,9 @@
 package com.nelolik.savecountbot.handler.context;
 
-import com.nelolik.savecountbot.handler.context.ContextHandler;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 
 @Component
 public class ContextHandlerImpl implements ContextHandler {

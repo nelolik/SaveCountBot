@@ -2,7 +2,6 @@ package com.nelolik.savecountbot.repository;
 
 import com.nelolik.savecountbot.model.Records;
 import com.nelolik.savecountbot.repositroy.RecordsRepository;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;

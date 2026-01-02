@@ -6,13 +6,13 @@
 
     <groupId>org.nelolik.savecountbot</groupId>
     <artifactId>SaveCountBot</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2</version>
     <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <telegrambots-spring-boot-starter.version>5.7.1</telegrambots-spring-boot-starter.version>
+        <telegrambots-spring-boot-starter.version>6.1.0</telegrambots-spring-boot-starter.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -26,6 +26,11 @@
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots-spring-boot-starter</artifactId>
             <version>${telegrambots-spring-boot-starter.version}</version>
+        </dependency>
+        <!-- Spring Web for REST API -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
